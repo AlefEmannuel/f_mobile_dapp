@@ -29,6 +29,7 @@ class ForumController extends GetxController {
   RxBool isLoading = false.obs;
 
   RxString newTopicText = ''.obs;
+  RxString newCommentText = ''.obs;
 
   RxInt selectedIndex = 0.obs;
 
@@ -43,7 +44,7 @@ class ForumController extends GetxController {
 //obtain our smart contract using rootbundle to access our json file
     String abiFile = await rootBundle.loadString("assets/contract2.json");
 
-    String contractAddress = "0x1729E657FaFcD7A4C0e86b5e98Bf884b08447F3b";
+    String contractAddress = "0xE310697c31a3DeE0fB66880b122FBDa3Ec1E072a";
 
     final contract = DeployedContract(ContractAbi.fromJson(abiFile, "Topic"),
         EthereumAddress.fromHex(contractAddress));
@@ -89,7 +90,7 @@ class ForumController extends GetxController {
     List<dynamic> getAllComents = await getData(
         "getAllComments", [BigInt.parse(topicList[selectedIndex.value].id)]);
     String data = getAllComents.toString();
-    List<String> result = data.replaceAll(RegExp(r'\['), '').split(',');
+    List<String> result = data.replaceAll('[', '').split(',');
     String result2 = result.toString().replaceAll(RegExp(r'\]'), '');
     List<String> commentList = result2.split(',');
     print(commentList);
@@ -99,7 +100,7 @@ class ForumController extends GetxController {
 
   List<ComentModel> getComents(List<String> data) {
     List<ComentModel> list = [];
-    for (var i = 0; i < data.length; i = i + 6) {
+    for (var i = 0; i < data.length; i = i + 4) {
       if (data.length > 3) {
         list.add(
             ComentModel(id: data[i], address: data[i + 1], text: data[i + 3]));
@@ -128,6 +129,36 @@ class ForumController extends GetxController {
             function: function,
             value: EtherAmount.inWei(BigInt.from(10000000000000000)),
             parameters: [newTopicText.value.replaceAll(",", ";")]),
+        chainId: 3);
+    newTopicText.value = '';
+    Future.delayed(const Duration(seconds: 20), () {
+      getAllTopics();
+      isLoading = false.obs;
+    });
+  }
+
+  Future<void> createComment() async {
+    isLoading = true.obs;
+    Credentials key = EthPrivateKey.fromHex(
+        "a81e3c93f759f27d157d79fbbd076a26b765f3e360ddc683ae2c305b52e6ea4f");
+
+    //obtain our contract from abi in json file
+    final contract = await getContract();
+
+    // extract function from json file
+    final function = contract.function("commentTopic");
+    print(BigInt.parse(topicList[selectedIndex.value].id));
+    //send transaction using the our private key, function and contract
+    await ethClient.sendTransaction(
+        key,
+        Transaction.callContract(
+            contract: contract,
+            function: function,
+            value: EtherAmount.inWei(BigInt.from(1000000000000000)),
+            parameters: [
+              BigInt.parse(topicList[selectedIndex.value].id),
+              newCommentText.value.replaceAll(",", ";")
+            ]),
         chainId: 3);
     newTopicText.value = '';
     Future.delayed(const Duration(seconds: 20), () {

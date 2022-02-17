@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fórum'),
+        title: Text('Fórum descentralizado'),
       ),
       body: Center(
         child: Container(

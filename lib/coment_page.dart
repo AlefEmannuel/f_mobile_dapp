@@ -14,6 +14,8 @@ class ComentPage extends StatefulWidget {
 }
 
 class _ComentPageState extends State<ComentPage> {
+  final TextEditingController _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -21,7 +23,32 @@ class _ComentPageState extends State<ComentPage> {
       appBar: AppBar(title: const Text('Fórum')),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text("Criar um comentário"),
+                    content: Container(
+                        height: 100,
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: _textController,
+                              onChanged: (value) {
+                                widget.controller.newCommentText.value = value;
+                              },
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                widget.controller.createComment();
+                                _textController.clear();
+                              },
+                              child: const Text('Comentar'),
+                            ),
+                          ],
+                        )),
+                  ));
+        },
       ),
       body: Center(
         child: Container(
