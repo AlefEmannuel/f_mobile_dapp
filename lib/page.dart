@@ -1,5 +1,4 @@
 import 'package:f_vote/coment_page.dart';
-import 'package:f_vote/controller.dart';
 import 'package:f_vote/forum_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  HomeController controller = Get.put(HomeController());
   ForumController forumController = Get.put(ForumController());
   final TextEditingController _textController = TextEditingController();
 
