@@ -17,6 +17,10 @@ class _ComentPageState extends State<ComentPage> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(title: const Text('Fórum')),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {},
+      ),
       body: Center(
         child: Container(
           width: width * .9,
@@ -68,12 +72,22 @@ class _ComentPageState extends State<ComentPage> {
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
-                      const Text(
-                        "Interações",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Interações",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                widget.controller.getAllComents();
+                              },
+                              icon: const Icon(Icons.refresh_outlined)),
+                        ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Expanded(
@@ -81,12 +95,30 @@ class _ComentPageState extends State<ComentPage> {
                           () => ListView.builder(
                               itemCount: widget.controller.comentList.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                return Column(
                                   children: [
-                                    Text(
-                                        "#${index + 1}: ${widget.controller.comentList[index].text}"),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const CircleAvatar(
+                                          child: const Text('LM'),
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Flexible(
+                                          child: Text(
+                                            "${widget.controller.comentList[index].address}: ${widget.controller.comentList[index].text}",
+                                            textAlign: TextAlign.justify,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    const Divider()
                                   ],
                                 );
                               }),
@@ -94,11 +126,6 @@ class _ComentPageState extends State<ComentPage> {
                       ),
                     ],
                   )),
-              ElevatedButton(
-                  onPressed: () {
-                    widget.controller.getAllComents();
-                  },
-                  child: Text('Atualizar'))
             ],
           ),
         ),
