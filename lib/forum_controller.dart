@@ -49,7 +49,7 @@ class ForumController extends GetxController {
 //obtain our smart contract using rootbundle to access our json file
     String abiFile = await rootBundle.loadString("assets/contract2.json");
 
-    String contractAddress = "0xB63AB1A617C4dA9B149F77897563382460da2ACC";
+    String contractAddress = "0x580D42EBd99789F923D44a5f445FbaA91f71Fe12";
 
     final contract = DeployedContract(ContractAbi.fromJson(abiFile, "Topic"),
         EthereumAddress.fromHex(contractAddress));
