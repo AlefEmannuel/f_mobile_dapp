@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   HomeController controller = Get.put(HomeController());
   ForumController forumController = Get.put(ForumController());
+  final TextEditingController _textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +27,21 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               TextField(
-                onChanged: (value){
+                controller: _textController,
+                onChanged: (value) {
                   forumController.newTopicText.value = value;
                 },
               ),
               ElevatedButton(
                 onPressed: () {
-                  forumController.createTopic('dasdasdasd');
+                  forumController.createTopic();
+                  _textController.clear();
                 },
                 child: const Text('Cadastrar tópico'),
               ),
-              const SizedBox(height: 30,),
+              const SizedBox(
+                height: 30,
+              ),
               ElevatedButton(
                 onPressed: () {
                   forumController.getAllTopics();

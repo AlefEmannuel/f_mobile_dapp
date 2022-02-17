@@ -72,7 +72,7 @@ class ForumController extends GetxController {
     return topics;
   }
 
-  Future<void> createTopic(String topic) async {
+  Future<void> createTopic() async {
     //showSnackBar(label: "Recording vote");
     //obtain private key for write operation
     isLoading = true.obs;
@@ -89,9 +89,11 @@ class ForumController extends GetxController {
     await ethClient.sendTransaction(
         key,
         Transaction.callContract(
-            contract: contract, function: function, parameters: ['Primeiro']),
+            contract: contract,
+            function: function,
+            parameters: [newTopicText.value]),
         chainId: 3);
-
+    newTopicText.value = '';
     Future.delayed(const Duration(seconds: 20), () {
       getAllTopics();
       isLoading = false.obs;
