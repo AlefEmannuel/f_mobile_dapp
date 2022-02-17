@@ -1,3 +1,4 @@
+import 'package:f_vote/coments_model.dart';
 import 'package:f_vote/model.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
@@ -23,9 +24,13 @@ class ForumController extends GetxController {
 
   List<TopicModel> topicList = <TopicModel>[].obs;
 
+  List<ComentModel> comentList = <ComentModel>[].obs;
+
   RxBool isLoading = false.obs;
 
   RxString newTopicText = ''.obs;
+
+  RxInt selectedIndex = 0.obs;
 
   @override
   void initState() {
@@ -38,7 +43,7 @@ class ForumController extends GetxController {
 //obtain our smart contract using rootbundle to access our json file
     String abiFile = await rootBundle.loadString("assets/contract2.json");
 
-    String contractAddress = "0xB7bab6e107130f70e7195323a0209Be9C308674C";
+    String contractAddress = "0x864D638be7f65dfA328F4531D253113a85f5E3ce";
 
     final contract = DeployedContract(ContractAbi.fromJson(abiFile, "Topic"),
         EthereumAddress.fromHex(contractAddress));
@@ -51,6 +56,14 @@ class ForumController extends GetxController {
     final function = contract.function(name);
     final result = await ethClient
         .call(contract: contract, function: function, params: []);
+    return result;
+  }
+
+  Future<List<dynamic>> getData(String name, List<dynamic> params) async {
+    final contract = await getContract();
+    final function = contract.function(name);
+    final result = await ethClient.call(
+        contract: contract, function: function, params: params);
     return result;
   }
 
@@ -72,9 +85,31 @@ class ForumController extends GetxController {
     return topics;
   }
 
+  Future<void> getAllComents() async {
+    List<dynamic> getAllComents = await getData(
+        "getAllComments", [BigInt.parse(topicList[selectedIndex.value].id)]);
+    String data = getAllComents.toString();
+    List<String> result = data.replaceAll(RegExp(r'\['), '').split(',');
+    String result2 = result.toString().replaceAll(RegExp(r'\]'), '');
+    List<String> commentList = result2.split(',');
+    print(commentList);
+    comentList.clear();
+    comentList.addAll(getComents(commentList));
+  }
+
+  List<ComentModel> getComents(List<String> data) {
+    List<ComentModel> list = [];
+    for (var i = 0; i < data.length; i = i + 6) {
+      if (data.length > 3) {
+        list.add(
+            ComentModel(id: data[i], address: data[i + 1], text: data[i + 3]));
+      }
+    }
+
+    return list;
+  }
+
   Future<void> createTopic() async {
-    //showSnackBar(label: "Recording vote");
-    //obtain private key for write operation
     isLoading = true.obs;
     Credentials key = EthPrivateKey.fromHex(
         "a81e3c93f759f27d157d79fbbd076a26b765f3e360ddc683ae2c305b52e6ea4f");

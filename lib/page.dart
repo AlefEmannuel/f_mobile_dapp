@@ -1,3 +1,4 @@
+import 'package:f_vote/coment_page.dart';
 import 'package:f_vote/controller.dart';
 import 'package:f_vote/forum_controller.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,9 @@ class _HomePageState extends State<HomePage> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Fórum'),
+      ),
       body: Center(
         child: Container(
           padding: const EdgeInsets.only(top: 80),
@@ -40,21 +44,52 @@ class _HomePageState extends State<HomePage> {
                 child: const Text('Cadastrar tópico'),
               ),
               const SizedBox(
-                height: 30,
+                height: 20,
               ),
-              ElevatedButton(
-                onPressed: () {
-                  forumController.getAllTopics();
-                },
-                child: Text('Atualizar tópicos'),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Tópicos:',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          forumController.getAllTopics();
+                        },
+                        icon: const Icon(Icons.refresh_outlined))
+                  ],
+                ),
               ),
               Expanded(
                 child: Obx(
                   () => ListView.builder(
                       itemCount: forumController.topicList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Text(
-                            "Topic: ${forumController.topicList[index].comment}");
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                "#${index + 1}: ${forumController.topicList[index].comment}"),
+                            IconButton(
+                                onPressed: () {
+                                  forumController.selectedIndex.value = index;
+                                  forumController.getAllComents();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ComentPage(
+                                              controller: forumController,
+                                            )),
+                                  );
+                                },
+                                icon:
+                                    const Icon(Icons.arrow_right_alt_outlined))
+                          ],
+                        );
                       }),
                 ),
               ),
