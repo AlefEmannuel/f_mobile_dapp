@@ -33,6 +33,17 @@
     },
     {
         "inputs": [{
+            "internalType": "address",
+            "name": "add",
+            "type": "address"
+        }],
+        "name": "donate",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [{
             "internalType": "uint256",
             "name": "topicId",
             "type": "uint256"

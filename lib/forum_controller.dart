@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:f_vote/coments_model.dart';
 import 'package:f_vote/topic_model.dart';
 import 'package:flutter/services.dart';
@@ -37,14 +40,16 @@ class ForumController extends GetxController {
   void initState() {
     httpClient = Client();
     ethClient = Web3Client(blockchainUrl, httpClient);
-    getAllTopics();
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
+      await getAllTopics();
+    });
   }
 
   Future<DeployedContract> getContract() async {
 //obtain our smart contract using rootbundle to access our json file
     String abiFile = await rootBundle.loadString("assets/contract2.json");
 
-    String contractAddress = "0xE310697c31a3DeE0fB66880b122FBDa3Ec1E072a";
+    String contractAddress = "0xB63AB1A617C4dA9B149F77897563382460da2ACC";
 
     final contract = DeployedContract(ContractAbi.fromJson(abiFile, "Topic"),
         EthereumAddress.fromHex(contractAddress));
@@ -114,27 +119,67 @@ class ForumController extends GetxController {
     isLoading = true.obs;
     Credentials key = EthPrivateKey.fromHex(
         "a81e3c93f759f27d157d79fbbd076a26b765f3e360ddc683ae2c305b52e6ea4f");
-
+    Future.delayed(const Duration(seconds: 10), () {
+      isLoading = false.obs;
+    });
     //obtain our contract from abi in json file
     final contract = await getContract();
 
     // extract function from json file
     final function = contract.function("createTopic");
 
+    String transactionHex = "";
+
     //send transaction using the our private key, function and contract
+    await ethClient
+        .sendTransaction(
+            key,
+            Transaction.callContract(
+                contract: contract,
+                function: function,
+                value: EtherAmount.inWei(BigInt.from(10000000000000000)),
+                parameters: [newTopicText.value.replaceAll(",", ";")]),
+            chainId: 3)
+        .then((value) {
+      transactionHex = value;
+    });
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
+      TransactionInformation trans =
+          await ethClient.getTransactionByHash(transactionHex);
+
+      if (trans.blockHash != null) {
+        print("Transaction: ${trans.blockHash.toString()}");
+        isLoading = false.obs;
+        isLoading.value = false;
+        await getAllTopics();
+        timer.cancel();
+      }
+    });
+  }
+
+  Future<void> donate(String address) async {
+    Credentials key = EthPrivateKey.fromHex(
+        "a81e3c93f759f27d157d79fbbd076a26b765f3e360ddc683ae2c305b52e6ea4f");
+
+    //obtain our contract from abi in json file
+    final contract = await getContract();
+
+    // extract function from json file
+    final function = contract.function("donate");
+
     await ethClient.sendTransaction(
         key,
         Transaction.callContract(
             contract: contract,
             function: function,
-            value: EtherAmount.inWei(BigInt.from(10000000000000000)),
-            parameters: [newTopicText.value.replaceAll(",", ";")]),
+            value: EtherAmount.fromUnitAndValue(
+                EtherUnit.wei, newCommentText.value),
+            parameters: [
+              EthereumAddress.fromHex(address.replaceAll(" ", "")),
+            ]),
         chainId: 3);
     newTopicText.value = '';
-    Future.delayed(const Duration(seconds: 20), () {
-      getAllTopics();
-      isLoading = false.obs;
-    });
+    print("doou");
   }
 
   Future<void> createComment() async {
@@ -161,7 +206,7 @@ class ForumController extends GetxController {
             ]),
         chainId: 3);
     newTopicText.value = '';
-    Future.delayed(const Duration(seconds: 20), () {
+    Future.delayed(const Duration(seconds: 5), () {
       getAllTopics();
       isLoading = false.obs;
     });

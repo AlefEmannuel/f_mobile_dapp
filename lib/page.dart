@@ -36,13 +36,14 @@ class _HomePageState extends State<HomePage> {
                   forumController.newTopicText.value = value;
                 },
               ),
-              ElevatedButton(
-                onPressed: () {
-                  forumController.createTopic();
-                  _textController.clear();
-                },
-                child: const Text('Cadastrar tópico'),
-              ),
+              Obx(() => !forumController.isLoading.value
+                  ? ElevatedButton(
+                      onPressed: () {
+                        forumController.createTopic();
+                        _textController.clear();
+                      },
+                      child: const Text('Cadastrar tópico'))
+                  : CircularProgressIndicator()),
               const SizedBox(
                 height: 20,
               ),

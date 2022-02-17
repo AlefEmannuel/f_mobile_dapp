@@ -27,7 +27,7 @@ class _ComentPageState extends State<ComentPage> {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                    title: Text("Criar um comentário"),
+                    title: const Text("Criar um comentário"),
                     content: Container(
                         height: 100,
                         child: Column(
@@ -139,12 +139,55 @@ class _ComentPageState extends State<ComentPage> {
                                           .comentList[index].address),
                                       trailing: IconButton(
                                           onPressed: () {
-                                            widget.controller.selectedIndex
-                                                .value = index;
-                                            widget.controller.getAllComents();
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                      title:
+                                                          const Text("Doação"),
+                                                      content: SizedBox(
+                                                          height: 100,
+                                                          child: Column(
+                                                            children: [
+                                                              TextFormField(
+                                                                decoration:
+                                                                    const InputDecoration(
+                                                                        hintText:
+                                                                            "Valor em WEI"),
+                                                                keyboardType:
+                                                                    TextInputType
+                                                                        .number,
+                                                                controller:
+                                                                    _textController,
+                                                                onChanged:
+                                                                    (value) {
+                                                                  widget
+                                                                      .controller
+                                                                      .newCommentText
+                                                                      .value = value;
+                                                                },
+                                                              ),
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  widget.controller.donate(widget
+                                                                      .controller
+                                                                      .comentList[
+                                                                          index]
+                                                                      .address);
+                                                                  _textController
+                                                                      .clear();
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                child:
+                                                                    const Text(
+                                                                        'Doar'),
+                                                              ),
+                                                            ],
+                                                          )),
+                                                    ));
                                           },
-                                          icon: const Icon(
-                                              Icons.arrow_right_alt_outlined))),
+                                          icon: const Icon(Icons.money))),
                                 );
                               }),
                         ),
