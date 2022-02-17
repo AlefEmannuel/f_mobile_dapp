@@ -43,7 +43,7 @@ class ForumController extends GetxController {
 //obtain our smart contract using rootbundle to access our json file
     String abiFile = await rootBundle.loadString("assets/contract2.json");
 
-    String contractAddress = "0x864D638be7f65dfA328F4531D253113a85f5E3ce";
+    String contractAddress = "0x1729E657FaFcD7A4C0e86b5e98Bf884b08447F3b";
 
     final contract = DeployedContract(ContractAbi.fromJson(abiFile, "Topic"),
         EthereumAddress.fromHex(contractAddress));
@@ -126,7 +126,8 @@ class ForumController extends GetxController {
         Transaction.callContract(
             contract: contract,
             function: function,
-            parameters: [newTopicText.value]),
+            value: EtherAmount.inWei(BigInt.from(10000000000000000)),
+            parameters: [newTopicText.value.replaceAll(",", ";")]),
         chainId: 3);
     newTopicText.value = '';
     Future.delayed(const Duration(seconds: 20), () {

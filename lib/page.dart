@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:f_vote/coment_page.dart';
 import 'package:f_vote/forum_controller.dart';
 import 'package:flutter/material.dart';
@@ -67,26 +69,41 @@ class _HomePageState extends State<HomePage> {
                   () => ListView.builder(
                       itemCount: forumController.topicList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                "#${index + 1}: ${forumController.topicList[index].comment}"),
-                            IconButton(
-                                onPressed: () {
-                                  forumController.selectedIndex.value = index;
-                                  forumController.getAllComents();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ComentPage(
-                                              controller: forumController,
-                                            )),
-                                  );
-                                },
-                                icon:
-                                    const Icon(Icons.arrow_right_alt_outlined))
-                          ],
+                        return Card(
+                          child: ListTile(
+                              contentPadding:
+                                  const EdgeInsets.only(bottom: 10, left: 10),
+                              title: Text(
+                                forumController.topicList[index].comment
+                                    .substring(
+                                        0,
+                                        min(
+                                            20,
+                                            forumController.topicList[index]
+                                                .comment.length)),
+                                textAlign: TextAlign.start,
+                              ),
+                              leading: const CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(
+                                    "https://picsum.photos/300/300"),
+                              ),
+                              subtitle: Text(
+                                  forumController.topicList[index].address),
+                              trailing: IconButton(
+                                  onPressed: () {
+                                    forumController.selectedIndex.value = index;
+                                    forumController.getAllComents();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ComentPage(
+                                                controller: forumController,
+                                              )),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                      Icons.arrow_right_alt_outlined))),
                         );
                       }),
                 ),

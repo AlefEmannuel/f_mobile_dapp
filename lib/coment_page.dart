@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:f_vote/forum_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,44 +29,40 @@ class _ComentPageState extends State<ComentPage> {
           padding: const EdgeInsets.only(top: 30),
           child: Column(
             children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                  alignment: Alignment.topLeft,
-                  padding: const EdgeInsets.all(30),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.white,
-                    // ignore: prefer_const_literals_to_create_immutables
-                    boxShadow: [
-                      const BoxShadow(
-                        color: Colors.grey,
-                        offset: Offset(0.0, 1.0), //(x,y)
-                        blurRadius: 6.0,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const CircleAvatar(
-                        child: Text('AE'),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Obx(
-                        () => Flexible(
-                          child: Text(
-                            widget
-                                .controller
-                                .topicList[
-                                    widget.controller.selectedIndex.value]
-                                .comment,
-                          ),
+              Container(
+                alignment: Alignment.topLeft,
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5.0),
+                  color: Colors.white,
+                  // ignore: prefer_const_literals_to_create_immutables
+                  boxShadow: [
+                    const BoxShadow(
+                      color: Colors.grey,
+                      offset: Offset(0.0, 1.0), //(x,y)
+                      blurRadius: 6.0,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      child: Text('AE'),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Obx(
+                      () => Flexible(
+                        child: Text(
+                          widget
+                              .controller
+                              .topicList[widget.controller.selectedIndex.value]
+                              .comment,
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
               ),
               Expanded(
@@ -93,33 +91,33 @@ class _ComentPageState extends State<ComentPage> {
                       Expanded(
                         child: Obx(
                           () => ListView.builder(
+                              shrinkWrap: true,
                               itemCount: widget.controller.comentList.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const CircleAvatar(
-                                          child: const Text('LM'),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            "${widget.controller.comentList[index].address}: ${widget.controller.comentList[index].text}",
-                                            textAlign: TextAlign.justify,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    const Divider()
-                                  ],
+                                return Card(
+                                  child: ListTile(
+                                      contentPadding: const EdgeInsets.only(
+                                          bottom: 10, left: 10),
+                                      title: Text(
+                                        widget
+                                            .controller.comentList[index].text,
+                                        textAlign: TextAlign.start,
+                                      ),
+                                      leading: const CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage: NetworkImage(
+                                            "https://picsum.photos/300/300"),
+                                      ),
+                                      subtitle: Text(widget.controller
+                                          .comentList[index].address),
+                                      trailing: IconButton(
+                                          onPressed: () {
+                                            widget.controller.selectedIndex
+                                                .value = index;
+                                            widget.controller.getAllComents();
+                                          },
+                                          icon: const Icon(
+                                              Icons.arrow_right_alt_outlined))),
                                 );
                               }),
                         ),
